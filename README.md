@@ -84,7 +84,7 @@ await writeFile(
 
 Use a pinned classroom model and an optional distinct backup. Configuration alone does not prove a fallback happened.
 
-Source: `src/agent.ts`, line 56. Selected source; surrounding code omitted.
+Source: `src/agent.ts`, line 55. Selected source; surrounding code omitted.
 
 ```typescript
 model: config.model,
@@ -96,7 +96,7 @@ model: config.model,
 
 Keep reasoning effort and thinking configuration independent while respecting the pinned models. This lab does not expose thinking text.
 
-Source: `src/agent.ts`, line 58. Selected source; surrounding code omitted.
+Source: `src/agent.ts`, line 57. Selected source; surrounding code omitted.
 
 ```typescript
 ...(!config.model.includes("haiku")
@@ -110,7 +110,7 @@ thinking: config.thinking === "adaptive"
 
 A fresh query selects Alpha or Beta. Enabling the shared directory grants access to its reference file, not its configuration.
 
-Source: `src/agent.ts`, line 60. Selected source; surrounding code omitted.
+Source: `src/agent.ts`, line 59. Selected source; surrounding code omitted.
 
 ```typescript
 cwd: workspace(config.project),
@@ -122,7 +122,7 @@ additionalDirectories: config.shared
 
 TypeScript env replaces subprocess variables, so preserve inherited values before adding a harmless classroom context and app identifier. Raw credentials stay in the process.
 
-Source: `src/agent.ts`, line 62. Selected source; surrounding code omitted.
+Source: `src/agent.ts`, line 61. Selected source; surrounding code omitted.
 
 ```typescript
 env: {
@@ -147,7 +147,7 @@ const run = query({ prompt, options });
 
 Read the actual model field on assistant messages instead of relying only on the requested option or the model’s prose.
 
-Source: `src/agent.ts`, line 107. Selected source; surrounding code omitted.
+Source: `src/agent.ts`, line 106. Selected source; surrounding code omitted.
 
 ```typescript
 if (message.type === "assistant") {

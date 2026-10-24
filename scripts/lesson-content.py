@@ -38,8 +38,16 @@ lanes=['Student UI','Node host','SDK + Claude','Guarded tools','Classroom files'
 words=['one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen']
 for n,(title,source,anchor,code,explanation,a,b) in enumerate(specs,1):
  text=(APP/source).read_text(encoding='utf-8');assert anchor in text,(n,anchor)
- line=text[:text.index(anchor)].count('\n')+1
- steps.append(dict(number=n,title=title,source=source,code=code,language='typescript',explanation=explanation,firstLine=line,lastLine=line,anchors=[anchor],sourceSHA256=hashlib.sha256(text.encode()).hexdigest(),narration=f'Step {words[n-1]}. {explanation} The source label identifies the corresponding application statements.'))
+ anchors=[anchor]+{
+  3:['model: config.model,'],
+  4:['...(!config.model.includes("haiku") ? { effort: config.effort } : {}),'],
+  5:['cwd: workspace(config.project),'],
+  6:['env: { ...process.env, CLAUDE_CONFIG_DIR: resolve(ROOT, ".runtime/sdk-home"),'],
+  8:['if (message.type === "assistant") {'],
+  10:['if (evidence) emit(evidence);'],
+ }.get(n,[])
+ lines=[text[:text.index(a)].count('\n')+1 for a in anchors]
+ steps.append(dict(number=n,title=title,source=source,code=code,language='typescript',explanation=explanation,firstLine=min(lines),lastLine=max(lines),anchors=anchors,sourceSHA256=hashlib.sha256(text.encode()).hexdigest(),narration=f'Step {words[n-1]}. {explanation} The source label identifies the corresponding application statements.'))
  arrows.append([a,b,f'{n}. {title}'])
 (APP/'scripts/architecture-data.json').write_text(json.dumps(dict(lanes=lanes,arrows=arrows,steps=steps),indent=2),encoding='utf-8')
 xs=[170,520,870,1220,1570]
@@ -53,7 +61,7 @@ for i,(a,b,label) in enumerate(arrows):
 svg.append('</svg>');(PUBLIC/'architecture.svg').write_text(''.join(svg),encoding='utf-8')
 body='<section class="note">The sequence describes the actual application, including its optional shared-file branch. Fallback activation is conditional and is not claimed by a normal healthy run. Each numbered step below includes a source-labelled excerpt.</section><a class="button" href="/architecture.svg" download>Download UML SVG</a><div class="diagram"><img src="/architecture.svg" alt="Thirteen steps for selecting models and verifying environment and directories"></div>'
 for s in steps:
- n=s['number'];body+=f'<section class="step workflow-step" id="workflow-step-{n:02}"><span class="number">{n:02}</span><h3>{n}. {escape(s["title"])}</h3><p>{escape(s["explanation"])}</p><p class="source">Source: {s["source"]} · line {s["firstLine"]}</p><p class="meta">Selected source; surrounding implementation is omitted and display whitespace is reformatted.</p>'+snippet(s['code'])+f'<h4>How this code explains step {n}</h4><p>{escape(s["explanation"])}</p></section>'
+ n=s['number'];body+=f'<section class="step workflow-step" id="workflow-step-{n:02}"><span class="number">{n:02}</span><h3>{n}. {escape(s["title"])}</h3><p>{escape(s["explanation"])}</p><p class="source">Source: {s["source"]} · lines {s["firstLine"]}–{s["lastLine"]}</p><p class="meta">Selected source; surrounding implementation is omitted and display whitespace is reformatted.</p>'+snippet(s['code'])+f'<h4>How this code explains step {n}</h4><p>{escape(s["explanation"])}</p></section>'
 document('/architecture.html','Architecture and <em>UML workflow.</em>','Follow every step from validated options to actual subprocess evidence and formatted results.',body+actions(('/','← Application'),('/walkthrough.html','Code walkthrough →')))
 reference=[('model','Alias or full ID; this lab pins three IDs. Aliases such as haiku, sonnet and opus move over time. Newer deck examples are not promises of account access.'),('fallbackModel','A distinct backup, or a supported comma-separated chain. The app exposes one backup. Overload handling and primary retry are documented behavior, not induced here.'),('effort','The SDK type supports low, medium, high, xhigh and max. Model support varies. This UI limits Sonnet/Opus to low, medium and high; pinned Haiku omits effort.'),('thinking','adaptive, enabled with budgetTokens, or disabled. This app uses adaptive with display omitted or disabled. Summarized display is a supported public summary where available, never raw private reasoning.'),('env','TypeScript replaces the subprocess environment; spread process.env. Python merges explicit values over inheritance. This app executes only TypeScript.'),('cwd / additionalDirectories','cwd picks the project for a new session. Additional directories add file access, not their settings. This lab sets settingSources to [] and does not demonstrate configuration discovery.'),('Not a latency guarantee','Effort and model choices can affect cost and response behavior, but provider load, caching and task variation matter. These small observations do not establish a universal ranking.')]
 body=cards(reference)+''.join(f'<section class="step"><h3>{s["number"]}. {escape(s["title"])}</h3><p>{escape(s["explanation"])}</p><p class="source">{s["source"]} · line {s["firstLine"]}</p>'+snippet(s['code'])+'</section>' for s in steps)
