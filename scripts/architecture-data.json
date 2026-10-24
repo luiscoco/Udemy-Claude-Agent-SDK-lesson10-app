@@ -1,0 +1,273 @@
+{
+  "lanes": [
+    "Student UI",
+    "Node host",
+    "SDK + Claude",
+    "Guarded tools",
+    "Classroom files"
+  ],
+  "arrows": [
+    [
+      0,
+      1,
+      "1. Validate the classroom configuration"
+    ],
+    [
+      1,
+      4,
+      "2. Prepare two projects and shared reference"
+    ],
+    [
+      1,
+      2,
+      "3. Select primary and optional backup"
+    ],
+    [
+      1,
+      2,
+      "4. Configure effort and thinking separately"
+    ],
+    [
+      1,
+      2,
+      "5. Choose cwd and additional directories"
+    ],
+    [
+      1,
+      2,
+      "6. Preserve and extend the environment"
+    ],
+    [
+      1,
+      2,
+      "7. Start one real SDK query"
+    ],
+    [
+      2,
+      1,
+      "8. Observe the actual assistant model"
+    ],
+    [
+      2,
+      3,
+      "9. Guard each tool operation"
+    ],
+    [
+      3,
+      1,
+      "10. Verify actual environment and cwd"
+    ],
+    [
+      3,
+      4,
+      "11. Read the optional shared reference"
+    ],
+    [
+      2,
+      1,
+      "12. Preserve cost, time and typed outcome"
+    ],
+    [
+      1,
+      0,
+      "13. Render answers and compare observations"
+    ]
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "title": "Validate the classroom configuration",
+      "source": "src/server.ts",
+      "code": "const config = validateConfig(input);",
+      "language": "typescript",
+      "explanation": "Validate the fixed model list, project, supported thinking choices and distinct backup before a query starts.",
+      "firstLine": 52,
+      "lastLine": 52,
+      "anchors": [
+        "const config = validateConfig(input);"
+      ],
+      "sourceSHA256": "e108d353c8f105fee716464c91ef395b2aab7260d0eace47d44817df61f1c6e7",
+      "narration": "Step one. Validate the fixed model list, project, supported thinking choices and distinct backup before a query starts. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 2,
+      "title": "Prepare two projects and shared reference",
+      "source": "src/agent.ts",
+      "code": "await writeFile(\n  resolve(ROOT, \".runtime\", name, file),\n  await readFile(resolve(ROOT, \"fixtures\", name, file))\n);",
+      "language": "typescript",
+      "explanation": "Copy trusted fixture bytes into private runtime directories. No browser-supplied project path is accepted.",
+      "firstLine": 32,
+      "lastLine": 32,
+      "anchors": [
+        "await writeFile(resolve(ROOT, \".runtime\", name, file), await readFile(resolve(ROOT, \"fixtures\", name, file)));"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step two. Copy trusted fixture bytes into private runtime directories. No browser-supplied project path is accepted. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 3,
+      "title": "Select primary and optional backup",
+      "source": "src/agent.ts",
+      "code": "model: config.model,\n...(config.fallback\n  ? { fallbackModel: config.fallback } : {}),",
+      "language": "typescript",
+      "explanation": "Use a pinned classroom model and an optional distinct backup. Configuration alone does not prove a fallback happened.",
+      "firstLine": 56,
+      "lastLine": 56,
+      "anchors": [
+        "...(config.fallback ? { fallbackModel: config.fallback } : {}),"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step three. Use a pinned classroom model and an optional distinct backup. Configuration alone does not prove a fallback happened. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 4,
+      "title": "Configure effort and thinking separately",
+      "source": "src/agent.ts",
+      "code": "...(!config.model.includes(\"haiku\")\n  ? { effort: config.effort } : {}),\nthinking: config.thinking === \"adaptive\"\n  ? { type: \"adaptive\", display: \"omitted\" }\n  : { type: \"disabled\" },",
+      "language": "typescript",
+      "explanation": "Keep reasoning effort and thinking configuration independent while respecting the pinned models. This lab does not expose thinking text.",
+      "firstLine": 58,
+      "lastLine": 58,
+      "anchors": [
+        "thinking: config.thinking === \"adaptive\" ? { type: \"adaptive\", display: \"omitted\" } : { type: \"disabled\" },"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step four. Keep reasoning effort and thinking configuration independent while respecting the pinned models. This lab does not expose thinking text. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 5,
+      "title": "Choose cwd and additional directories",
+      "source": "src/agent.ts",
+      "code": "cwd: workspace(config.project),\nadditionalDirectories: config.shared\n  ? [sharedDirectory()] : [],",
+      "language": "typescript",
+      "explanation": "A fresh query selects Alpha or Beta. Enabling the shared directory grants access to its reference file, not its configuration.",
+      "firstLine": 60,
+      "lastLine": 60,
+      "anchors": [
+        "additionalDirectories: config.shared ? [sharedDirectory()] : [],"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step five. A fresh query selects Alpha or Beta. Enabling the shared directory grants access to its reference file, not its configuration. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 6,
+      "title": "Preserve and extend the environment",
+      "source": "src/agent.ts",
+      "code": "env: {\n  ...process.env,\n  // Private config directory omitted here.\n  LESSON10_CONTEXT: `lesson10-${config.project}`,\n  CLAUDE_AGENT_SDK_CLIENT_APP: \"udemy-lesson10/1.0\"\n},",
+      "language": "typescript",
+      "explanation": "TypeScript env replaces subprocess variables, so preserve inherited values before adding a harmless classroom context and app identifier. Raw credentials stay in the process.",
+      "firstLine": 62,
+      "lastLine": 62,
+      "anchors": [
+        "LESSON10_CONTEXT: `lesson10-${config.project}`, CLAUDE_AGENT_SDK_CLIENT_APP: \"udemy-lesson10/1.0\" },"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step six. TypeScript env replaces subprocess variables, so preserve inherited values before adding a harmless classroom context and app identifier. Raw credentials stay in the process. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 7,
+      "title": "Start one real SDK query",
+      "source": "src/agent.ts",
+      "code": "const run = query({ prompt, options });",
+      "language": "typescript",
+      "explanation": "Start one query with the fixed task and composed options. The SDK owns model and tool orchestration.",
+      "firstLine": 100,
+      "lastLine": 100,
+      "anchors": [
+        "const run = query({ prompt, options });"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step seven. Start one query with the fixed task and composed options. The SDK owns model and tool orchestration. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 8,
+      "title": "Observe the actual assistant model",
+      "source": "src/agent.ts",
+      "code": "if (message.type === \"assistant\") {\n  emit({ type: \"assistant-model\",\n    model: message.message.model });\n  // Content handling follows.\n}",
+      "language": "typescript",
+      "explanation": "Read the actual model field on assistant messages instead of relying only on the requested option or the model\u2019s prose.",
+      "firstLine": 107,
+      "lastLine": 107,
+      "anchors": [
+        "emit({ type: \"assistant-model\", model: message.message.model });"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step eight. Read the actual model field on assistant messages instead of relying only on the requested option or the model\u2019s prose. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 9,
+      "title": "Guard each tool operation",
+      "source": "src/agent.ts",
+      "code": "if (tool === \"Bash\")\n  return input.command === PROBE_COMMAND;\n// Read is restricted to selected fixture paths.",
+      "language": "typescript",
+      "explanation": "The path guard permits only selected reads and one exact Node command. Pre-approval does not replace this application check or create an OS sandbox.",
+      "firstLine": 37,
+      "lastLine": 37,
+      "anchors": [
+        "if (tool === \"Bash\") return input.command === PROBE_COMMAND;"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step nine. The path guard permits only selected reads and one exact Node command. Pre-approval does not replace this application check or create an OS sandbox. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 10,
+      "title": "Verify actual environment and cwd",
+      "source": "src/agent.ts",
+      "code": "const evidence = parseProbe(\n  input.tool_response, config\n);\nif (evidence) emit(evidence);",
+      "language": "typescript",
+      "explanation": "PostToolUse parses the actual command output. The host validates the harmless value and compares the observed cwd with the selected directory; it does not infer either from model prose.",
+      "firstLine": 76,
+      "lastLine": 76,
+      "anchors": [
+        "const evidence = parseProbe(input.tool_response, config);"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step ten. PostToolUse parses the actual command output. The host validates the harmless value and compares the observed cwd with the selected directory; it does not infer either from model prose. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 11,
+      "title": "Read the optional shared reference",
+      "source": "src/agent.ts",
+      "code": "if (config.shared) allowed.push(\n  resolve(sharedDirectory(), \"reference.md\")\n);",
+      "language": "typescript",
+      "explanation": "The Read guard permits the shared reference only when the UI enables that experiment. The prompt then requests its actual marker.",
+      "firstLine": 41,
+      "lastLine": 41,
+      "anchors": [
+        "if (config.shared) allowed.push(resolve(sharedDirectory(), \"reference.md\"));"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step eleven. The Read guard permits the shared reference only when the UI enables that experiment. The prompt then requests its actual marker. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 12,
+      "title": "Preserve cost, time and typed outcome",
+      "source": "src/agent.ts",
+      "code": "turns: message.num_turns,\ncostUsd: message.total_cost_usd,\nsessionId: message.session_id,\ndurationMs: Date.now() - started",
+      "language": "typescript",
+      "explanation": "Store actual runtime fields and measured elapsed time. A limit or provider failure is not relabelled as success; cost remains an SDK estimate.",
+      "firstLine": 118,
+      "lastLine": 118,
+      "anchors": [
+        "turns: message.num_turns, costUsd: message.total_cost_usd, sessionId: message.session_id, durationMs: Date.now() - started });"
+      ],
+      "sourceSHA256": "b00e3bedd44045c9accb64aa83725ba87f34ee13d5fa348695d48ef7efa722f8",
+      "narration": "Step twelve. Store actual runtime fields and measured elapsed time. A limit or provider failure is not relabelled as success; cost remains an SDK estimate. The source label identifies the corresponding application statements."
+    },
+    {
+      "number": 13,
+      "title": "Render answers and compare observations",
+      "source": "src/client.ts",
+      "code": "renderMarkdown($(\"answer\"), e.text);",
+      "language": "typescript",
+      "explanation": "Render model text through the bundled Markdown parser and sanitizer. Keep actual models, probe evidence and comparison rows separate from the answer.",
+      "firstLine": 19,
+      "lastLine": 19,
+      "anchors": [
+        "renderMarkdown($(\"answer\"), e.text);"
+      ],
+      "sourceSHA256": "a603f71b113b09c81e05d14b70bc2fd85a09b5126a9aa8c12874c8c46e829e80",
+      "narration": "Step thirteen. Render model text through the bundled Markdown parser and sanitizer. Keep actual models, probe evidence and comparison rows separate from the answer. The source label identifies the corresponding application statements."
+    }
+  ]
+}
